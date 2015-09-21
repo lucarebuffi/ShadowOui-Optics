@@ -59,10 +59,11 @@ PACKAGES = find_packages(
                          exclude = ('*.tests', '*.tests.*', 'tests.*', 'tests'),
                          )
 
-PACKAGE_DATA = {"orangecontrib.optics.widgets.beam":["icons/*.png", "icons/*.jpg"],
+PACKAGE_DATA = {"orangecontrib.optics.widgets.magnetic_structures":["icons/*.png", "icons/*.jpg"],
                 "orangecontrib.optics.widgets.optical_elements":["icons/*.png", "icons/*.jpg"],
                 "orangecontrib.shadow_optics.widgets.sources":["icons/*.png", "icons/*.jpg"],
                 "orangecontrib.shadow_optics.widgets.optical_elements":["icons/*.png", "icons/*.jpg"],
+                "orangecontrib.shadow_optics.widgets.driver":["icons/*.png", "icons/*.jpg"],
 }
 
 SETUP_REQUIRES = (
@@ -78,10 +79,11 @@ NAMESPACE_PACAKGES = ["orangecontrib",
 
 ENTRY_POINTS = {
     'oasys.addons' : ("shadow = orangecontrib.optics", ),
-    'oasys.widgets' : ("Optics: Beam = orangecontrib.optics.widgets.beam",
+    'oasys.widgets' : ("Optics: Magnetic Structures = orangecontrib.optics.widgets.magnetic_structures",
                        "Optics: Optical Elements = orangecontrib.optics.widgets.optical_elements",
                        "Shadow + Optics: Sources = orangecontrib.shadow_optics.widgets.sources",
                        "Shadow + Optics: O.E. = orangecontrib.shadow_optics.widgets.optical_elements",
+                       "Shadow + Optics: Driver = orangecontrib.shadow_optics.widgets.driver",
     ),
 }
 

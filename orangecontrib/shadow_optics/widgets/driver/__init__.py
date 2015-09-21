@@ -1,10 +1,9 @@
-NAME = "Optics: Beam"
+NAME = "Shadow: Optics Driver"
 
 DESCRIPTION = "Widgets for ShadowOui + Optics."
 
 BACKGROUND = "#FFFFFF"
 
-ICON = "icons/beam.png"
+ICON = "icons/driver.jpg"
 
-PRIORITY = 1001
-
+PRIORITY = 1005
