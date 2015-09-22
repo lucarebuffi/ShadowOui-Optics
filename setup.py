@@ -63,6 +63,7 @@ PACKAGE_DATA = {"orangecontrib.optics.widgets.magnetic_structures":["icons/*.png
                 "orangecontrib.optics.widgets.optical_elements":["icons/*.png", "icons/*.jpg"],
                 "orangecontrib.shadow_optics.widgets.sources":["icons/*.png", "icons/*.jpg"],
                 "orangecontrib.shadow_optics.widgets.optical_elements":["icons/*.png", "icons/*.jpg"],
+                "orangecontrib.shadow_optics.widgets.plots":["icons/*.png", "icons/*.jpg"],
                 "orangecontrib.shadow_optics.widgets.driver":["icons/*.png", "icons/*.jpg"],
 }
 
@@ -82,7 +83,8 @@ ENTRY_POINTS = {
     'oasys.widgets' : ("Optics: Magnetic Structures = orangecontrib.optics.widgets.magnetic_structures",
                        "Optics: Optical Elements = orangecontrib.optics.widgets.optical_elements",
                        "Shadow + Optics: Sources = orangecontrib.shadow_optics.widgets.sources",
-                       "Shadow + Optics: O.E. = orangecontrib.shadow_optics.widgets.optical_elements",
+                       "Shadow + Optics: O.E.  = orangecontrib.shadow_optics.widgets.optical_elements",
+                       "Shadow + Optics: Plots = orangecontrib.shadow_optics.widgets.plots",
                        "Shadow + Optics: Driver = orangecontrib.shadow_optics.widgets.driver",
     ),
 }

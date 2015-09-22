@@ -6,5 +6,5 @@ BACKGROUND = "#FFFFFF"
 
 ICON = "icons/optical_elements.png"
 
-PRIORITY = 1003
+PRIORITY = 1004
 

@@ -76,8 +76,8 @@ class BendingMagnet(ow_source.Source):
         ShadowGui.lineEdit(left_box_1, self, "number_of_rays", "Number of Rays", tooltip="Number of Rays", labelWidth=300, valueType=int, orientation="horizontal")
 
         ShadowGui.lineEdit(left_box_1, self, "seed", "Seed", tooltip="Seed", labelWidth=300, valueType=int, orientation="horizontal")
-        ShadowGui.lineEdit(left_box_1, self, "e_min", "Minimum Energy (eV)", tooltip="Minimum Energy (eV)", labelWidth=300, valueType=float, orientation="horizontal")
-        ShadowGui.lineEdit(left_box_1, self, "e_max", "Maximum Energy (eV)", tooltip="Maximum Energy (eV)", labelWidth=300, valueType=float, orientation="horizontal")
+        self.le_e_min = ShadowGui.lineEdit(left_box_1, self, "e_min", "Minimum Energy (eV)", tooltip="Minimum Energy (eV)", labelWidth=300, valueType=float, orientation="horizontal")
+        self.le_e_max = ShadowGui.lineEdit(left_box_1, self, "e_max", "Maximum Energy (eV)", tooltip="Maximum Energy (eV)", labelWidth=300, valueType=float, orientation="horizontal")
         gui.comboBox(left_box_1, self, "generate_polarization_combo", label="Generate Polarization", items=["Only Parallel", "Only Perpendicular", "Total"], labelWidth=300, orientation="horizontal")
 
         left_box_2 = ShadowGui.widgetBox(self.controlArea, "Machine Parameters", addSpace=True, orientation="vertical")
@@ -167,15 +167,18 @@ class BendingMagnet(ow_source.Source):
         if not bending_magnet_parameters is None:
             self.bending_magnet_parameters = bending_magnet_parameters
 
-            if not self.bending_magnet_parameters.bending_magnet.has_settings(self.driver):
-                self.bending_magnet_parameters.bending_magnet.add_settings(ShadowBendingMagnetSetting())
+            if not self.bending_magnet_parameters._bending_magnet.has_settings(self.driver):
+                self.bending_magnet_parameters._bending_magnet.add_settings(ShadowBendingMagnetSetting())
 
-            shadow_bending_magnet = ShadowBendingMagnet(electron_beam=self.bending_magnet_parameters.electron_beam,
-                                                        bending_magnet=self.bending_magnet_parameters.bending_magnet,
-                                                        energy_min=0.0,
-                                                        energy_max=0.0)
+            shadow_bending_magnet = ShadowBendingMagnet(electron_beam=self.bending_magnet_parameters._electron_beam,
+                                                        bending_magnet=self.bending_magnet_parameters._bending_magnet,
+                                                        energy_min=self.bending_magnet_parameters._energy_min,
+                                                        energy_max=self.bending_magnet_parameters._energy_max)
 
             shadow_source = shadow_bending_magnet.toNativeShadowSource()
+
+            self.e_min = shadow_source.PH1
+            self.e_max = shadow_source.PH2
 
             self.sigma_x = shadow_source.SIGMAX
             self.sigma_z = shadow_source.SIGMAZ
@@ -189,6 +192,8 @@ class BendingMagnet(ow_source.Source):
             self.horizontal_half_divergence_from = shadow_source.HDIV1
             self.horizontal_half_divergence_to = shadow_source.HDIV2
 
+            self.le_e_min.setEnabled(False)
+            self.le_e_max.setEnabled(False)
             self.le_sigma_x.setEnabled(False)
             self.le_sigma_z.setEnabled(False)
             self.le_emittance_x.setEnabled(False)
@@ -201,9 +206,11 @@ class BendingMagnet(ow_source.Source):
             self.le_horizontal_half_divergence_to.setEnabled(False)
         else:
             if not self.bending_magnet_parameters is None:
-                self.bending_magnet_parameters.bending_magnet.remove_settings(self.driver)
+                self.bending_magnet_parameters._bending_magnet.remove_settings(self.driver)
                 self.bending_magnet_parameters = None
 
+            self.le_e_min.setEnabled(True)
+            self.le_e_max.setEnabled(True)
             self.le_sigma_x.setEnabled(True)
             self.le_sigma_z.setEnabled(True)
             self.le_emittance_x.setEnabled(True)
@@ -263,6 +270,8 @@ class BendingMagnet(ow_source.Source):
             self.error_id = self.error_id + 1
             self.error(self.error_id, "Exception occurred: " + str(exception))
 
+            #raise exception
+
         self.progressBarFinished()
 
 
@@ -275,6 +284,7 @@ class BendingMagnet(ow_source.Source):
         self.seed = ShadowGui.checkPositiveNumber(self.seed, "Seed")
         self.e_min = ShadowGui.checkPositiveNumber(self.e_min, "Minimum energy")
         self.e_max = ShadowGui.checkPositiveNumber(self.e_max, "Maximum energy")
+        if self.e_min > self.e_max: raise Exception("Energy min should be <= Energy max")
         self.sigma_x = ShadowGui.checkPositiveNumber(self.sigma_x, "Sigma x")
         self.sigma_z = ShadowGui.checkPositiveNumber(self.sigma_z, "Sigma z")
         self.emittance_x = ShadowGui.checkPositiveNumber(self.emittance_x, "Emittance x")
@@ -298,9 +308,9 @@ class BendingMagnet(ow_source.Source):
 
     def populateFields(self):
         if self.bending_magnet_parameters is None:
-            return None
+            raise NotImplementedError("Widget to be plugged to Optic Package!")
         else:
-            shadow_bending_magnet_settings = self.bending_magnet_parameters.bending_magnet.settings(self.driver)
+            shadow_bending_magnet_settings = self.bending_magnet_parameters._bending_magnet.settings(self.driver)
 
             shadow_bending_magnet_settings._number_of_rays=self.number_of_rays
             shadow_bending_magnet_settings._seed=self.seed
@@ -332,7 +342,7 @@ class BendingMagnet(ow_source.Source):
             else:
                 shadow_bending_magnet_settings._max_number_of_rejected_rays = 10000000
 
-            return ShadowBendingMagnet(electron_beam=self.bending_magnet_parameters.electron_beam,
-                                       bending_magnet=self.bending_magnet_parameters.bending_magnet,
+            return ShadowBendingMagnet(electron_beam=self.bending_magnet_parameters._electron_beam,
+                                       bending_magnet=self.bending_magnet_parameters._bending_magnet,
                                        energy_min=self.e_min,
                                        energy_max=self.e_max)

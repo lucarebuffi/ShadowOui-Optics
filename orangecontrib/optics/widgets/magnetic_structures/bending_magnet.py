@@ -9,9 +9,10 @@ from PyQt4.QtCore import QRect
 
 from orangecontrib.shadow.util.shadow_util import ShadowGui, ConfirmDialog
 
-from orangecontrib.optics.objects.optics_objects import BendingMagnetParameters
+from orangecontrib.optics.objects.optics_objects import BendingMagnetParameters, BeamlineParameters
 import optics.magnetic_structures.bending_magnet as bm
 import optics.beam.electron_beam as eb
+import optics.beam.electron_beam_pencil as ebp
 
 class BendingMagnet(OWWidget):
 
@@ -24,10 +25,14 @@ class BendingMagnet(OWWidget):
     category = "Magnetic Structures"
     keywords = ["data", "file", "load", "read"]
 
-    outputs = [{"name":"Parameters",
+    outputs = [{"name":"Source Parameters",
                 "type":BendingMagnetParameters,
                 "doc":"BendingMagnetParameters",
-                "id":"paramters"}]
+                "id":"paramters"},
+               {"name":"Beamline Parameters",
+                "type":BeamlineParameters,
+                "doc":"BeamlineParameters",
+                "id":"beamline_parameters"}]
 
 
     energy_in_GeV       = Setting(6.0)
@@ -49,10 +54,13 @@ class BendingMagnet(OWWidget):
     magnetic_field=Setting(0.86)
     length=Setting(0.5)
 
+    e_min = Setting(0.0)
+    e_max = Setting(100000.0)
+
     want_main_area=0
 
     MAX_WIDTH = 500
-    MAX_HEIGHT = 800
+    MAX_HEIGHT = 700
 
     error_id = 0
     warning_id = 0
@@ -62,7 +70,7 @@ class BendingMagnet(OWWidget):
         super().__init__()
 
         self.runaction = widget.OWAction("Send Data to Simulators", self)
-        self.runaction.triggered.connect(self.sendData)
+        self.runaction.triggered.connect(self.send_data)
         self.addAction(self.runaction)
 
         geom = QApplication.desktop().availableGeometry()
@@ -77,12 +85,12 @@ class BendingMagnet(OWWidget):
         ShadowGui.lineEdit(left_box_1, self, "energy_in_GeV", "Energy [GeV]", labelWidth=300, valueType=float, orientation="horizontal")
         ShadowGui.lineEdit(left_box_1, self, "energy_spread", "Energy spread (relative)", labelWidth=300, valueType=int, orientation="horizontal")
         ShadowGui.lineEdit(left_box_1, self, "current", "Current (A)", labelWidth=300, valueType=float, orientation="horizontal")
-        ShadowGui.lineEdit(left_box_1, self, "electrons_per_bunch", "Number of electrons per bunch", labelWidth=300, valueType=float, orientation="horizontal")
 
         gui.comboBox(left_box_1, self, "kind_of_beam", label="Kind of Beam", items=["General", "Pencil"], labelWidth=300, orientation="horizontal", callback=self.set_kind_of_beam)
 
         self.left_box_2 = ShadowGui.widgetBox(left_box_1, "", addSpace=True, orientation="vertical", height=200)
 
+        ShadowGui.lineEdit(self.left_box_2, self, "electrons_per_bunch", "Number of electrons per bunch", labelWidth=300, valueType=float, orientation="horizontal")
         ShadowGui.lineEdit(self.left_box_2, self, "moment_xx", "Moment (spatial^2, horizontal) [m^2]", labelWidth=300, valueType=float, orientation="horizontal")
         ShadowGui.lineEdit(self.left_box_2, self, "moment_xxp", "Moment (spatial-angular, horizontal) [m]", labelWidth=300, valueType=float, orientation="horizontal")
         ShadowGui.lineEdit(self.left_box_2, self, "moment_xpxp", "Moment (angular^2, horizontal)", labelWidth=300, valueType=float, orientation="horizontal")
@@ -100,9 +108,14 @@ class BendingMagnet(OWWidget):
         ShadowGui.lineEdit(left_box_3, self, "magnetic_field", "Magnetic Field [T]", labelWidth=300, valueType=float, orientation="horizontal")
         ShadowGui.lineEdit(left_box_3, self, "length", "Arc length [m]", labelWidth=300, valueType=float, orientation="horizontal")
 
+        left_box_4 = ShadowGui.widgetBox(self.controlArea, "Simulation Parameters", addSpace=True, orientation="vertical")
+
+        ShadowGui.lineEdit(left_box_4, self, "e_min", "Energy min [eV]", labelWidth=300, valueType=float, orientation="horizontal")
+        ShadowGui.lineEdit(left_box_4, self, "e_max", "Energy max [eV]", labelWidth=300, valueType=float, orientation="horizontal")
+
         button_box = ShadowGui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal")
 
-        button = gui.button(button_box, self, "Send Data to Simulators", callback=self.sendData)
+        button = gui.button(button_box, self, "Send Data to Simulators", callback=self.send_data)
         font = QFont(button.font())
         font.setBold(True)
         button.setFont(font)
@@ -126,9 +139,8 @@ class BendingMagnet(OWWidget):
     def set_kind_of_beam(self):
         self.left_box_2.setVisible(self.kind_of_beam == 0)
         self.left_box_2_hidden.setVisible(self.kind_of_beam == 1)
-        gui.rubber(self.controlArea)
 
-    def sendData(self):
+    def send_data(self):
         self.error(self.error_id)
         self.setStatusMessage("")
         self.progressBarInit()
@@ -145,7 +157,11 @@ class BendingMagnet(OWWidget):
             #self.information()
             self.setStatusMessage("")
 
-            self.send("Parameters", bending_magnet_parameters)
+            self.send("Beamline Parameters", BeamlineParameters(electron_beam=bending_magnet_parameters._electron_beam,
+                                                                magnetic_structure=bending_magnet_parameters._bending_magnet,
+                                                                beamline=None))
+            self.send("Source Parameters", bending_magnet_parameters)
+
         except Exception as exception:
             QtGui.QMessageBox.critical(self, "QMessageBox.critical()",
                                        str(exception),
@@ -170,6 +186,11 @@ class BendingMagnet(OWWidget):
             self.moment_yyp  = ShadowGui.checkPositiveNumber(self.moment_yyp , "Moment (spatial-angular, vertical)")
             self.moment_ypyp = ShadowGui.checkPositiveNumber(self.moment_ypyp, "Moment (angular^2, vertical)")
 
+        self.e_min = ShadowGui.checkPositiveNumber(self.e_min, "Minimum energy")
+        self.e_max = ShadowGui.checkPositiveNumber(self.e_max, "Maximum energy")
+
+        if self.e_min > self.e_max: raise Exception("Energy min should be <= Energy max")
+
     def populate_fields(self):
         if self.kind_of_beam == 0:
             electron_beam = eb.ElectronBeam(self.energy_in_GeV,
@@ -183,14 +204,13 @@ class BendingMagnet(OWWidget):
                                             self.moment_yyp,
                                             self.moment_ypyp)
         else:
-            electron_beam = eb.ElectronBeamPencil(self.energy_in_GeV,
-                                                  self.energy_spread,
-                                                  self.current,
-                                                  self.electrons_per_bunch)
+            electron_beam = ebp.ElectronBeamPencil(self.energy_in_GeV,
+                                                   self.energy_spread,
+                                                   self.current)
 
         bending_magnet = bm.BendingMagnet(self.radius, self.magnetic_field, self.length)
 
-        return BendingMagnetParameters(electron_beam, bending_magnet)
+        return BendingMagnetParameters(electron_beam, bending_magnet, self.e_min, self.e_max)
 
     def callResetSettings(self):
         if ConfirmDialog.confirmed(parent=self, message="Confirm Reset of the Fields?"):
