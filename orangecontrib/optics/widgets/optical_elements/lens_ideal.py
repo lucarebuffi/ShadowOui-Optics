@@ -163,9 +163,9 @@ class LensIdeal(OWWidget):
 
         if not self.beamline_parameters is None:
             return LensIdealParameters(beamline=beamline,
+                                       lens_ideal=lens_ideal,
                                        energy_min=self.beamline_parameters._energy_min,
-                                       energy_max=self.beamline_parameters._energy_max,
-                                       lens_ideal=lens_ideal)
+                                       energy_max=self.beamline_parameters._energy_max)
         else:
             return LensIdealParameters(beamline=beamline,
                                        lens_ideal=lens_ideal)

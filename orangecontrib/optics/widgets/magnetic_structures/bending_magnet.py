@@ -159,7 +159,9 @@ class BendingMagnet(OWWidget):
 
             self.send("Beamline Parameters", BeamlineParameters(electron_beam=bending_magnet_parameters._electron_beam,
                                                                 magnetic_structure=bending_magnet_parameters._bending_magnet,
-                                                                beamline=None))
+                                                                beamline=None,
+                                                                energy_min=bending_magnet_parameters._energy_min,
+                                                                energy_max=bending_magnet_parameters._energy_max))
             self.send("Source Parameters", bending_magnet_parameters)
 
         except Exception as exception:

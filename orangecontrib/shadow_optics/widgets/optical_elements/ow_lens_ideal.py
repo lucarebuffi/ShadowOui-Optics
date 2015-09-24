@@ -10,7 +10,6 @@ from orangecontrib.shadow.util.shadow_objects import EmittingStream, TTYGrabber
 
 from code_drivers.shadow.driver.shadow_driver import ShadowDriver
 from code_drivers.shadow.driver.shadow_beam import ShadowBeam
-from code_drivers.shadow.optical_elements.shadow_optical_element import ShadowOpticalElement
 from code_drivers.shadow.optical_elements.shadow_lens_ideal import ShadowLensIdeal, ShadowLensIdealSettings
 
 from orangecontrib.shadow.util.shadow_util import ShadowGui, ShadowMath
@@ -104,8 +103,6 @@ class LensIdeal(ow_generic_element.GenericElement):
         if self.lens_ideal_parameters is None:
             raise NotImplementedError("Widget to be plugged to Optic Package!")
         else:
-            shadow_lens_ideal_settings = self.lens_ideal_parameters._lens_ideal.settings(self.driver)
-
             return ShadowLensIdeal(lens_ideal=self.lens_ideal_parameters._lens_ideal)
 
     def doSpecificSetting(self, shadow_oe):
@@ -162,6 +159,7 @@ class LensIdeal(ow_generic_element.GenericElement):
                     self.checkFields()
 
                     shadow_oe = self.populateFields()
+
                     self.doSpecificSetting(shadow_oe)
 
                     self.progressBarSet(10)
@@ -179,8 +177,6 @@ class LensIdeal(ow_generic_element.GenericElement):
 
             self.error_id = self.error_id + 1
             self.error(self.error_id, "Exception occurred: " + str(exception))
-
-            raise exception
 
         self.progressBarFinished()
 
