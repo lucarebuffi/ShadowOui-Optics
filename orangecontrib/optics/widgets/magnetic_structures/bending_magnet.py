@@ -10,6 +10,7 @@ from PyQt4.QtCore import QRect
 from orangecontrib.shadow.util.shadow_util import ShadowGui, ConfirmDialog
 
 from orangecontrib.optics.objects.optics_objects import BendingMagnetParameters, BeamlineParameters
+from optics.beamline.beamline import Beamline
 import optics.magnetic_structures.bending_magnet as bm
 import optics.beam.electron_beam as eb
 import optics.beam.electron_beam_pencil as ebp
@@ -159,7 +160,7 @@ class BendingMagnet(OWWidget):
 
             self.send("Beamline Parameters", BeamlineParameters(electron_beam=bending_magnet_parameters._electron_beam,
                                                                 magnetic_structure=bending_magnet_parameters._bending_magnet,
-                                                                beamline=None,
+                                                                beamline=Beamline(),
                                                                 energy_min=bending_magnet_parameters._energy_min,
                                                                 energy_max=bending_magnet_parameters._energy_max))
             self.send("Source Parameters", bending_magnet_parameters)

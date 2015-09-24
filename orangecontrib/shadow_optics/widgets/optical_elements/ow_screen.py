@@ -15,13 +15,13 @@ from code_drivers.shadow.optical_elements.shadow_lens_ideal import ShadowLensIde
 from orangecontrib.shadow.util.shadow_util import ShadowGui, ShadowMath
 from orangecontrib.optics.objects.optics_objects import LensIdealParameters
 
-class LensIdeal(ow_generic_element.GenericElement):
+class Screen(ow_generic_element.GenericElement):
     name = "Lens Ideal"
-    description = "Shadow OE: Lens Ideal"
-    icon = "icons/lens.png"
+    description = "Shadow OE: Screen"
+    icon = "icons/screen_slits.png"
     maintainer = "Luca Rebuffi"
     maintainer_email = "luca.rebuffi(@at@)elettra.eu"
-    priority = 1
+    priority = 2
     category = "OE"
     keywords = ["data", "file", "load", "read"]
 
