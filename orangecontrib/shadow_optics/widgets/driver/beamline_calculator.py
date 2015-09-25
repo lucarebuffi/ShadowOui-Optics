@@ -11,6 +11,7 @@ from orangecontrib.shadow.widgets.gui import ow_generic_element
 from orangecontrib.shadow.util.shadow_objects import EmittingStream
 
 from code_drivers.shadow.driver.shadow_driver import ShadowDriver
+from code_drivers.shadow.driver.shadow_beam import ShadowBeam
 
 from orangecontrib.shadow.util.shadow_util import ShadowGui
 
@@ -18,7 +19,7 @@ from orangecontrib.optics.objects.optics_objects import BeamlineParameters
 
 
 class BeamlineCalculator(ow_generic_element.GenericElement):
-    name = "Beamline Calculator"
+    name = "Shadow Beamline Calculator"
     description = "Shadow Driver: Beamline Calculator"
     icon = "icons/calculator.png"
     maintainer = "Luca Rebuffi"
@@ -28,6 +29,11 @@ class BeamlineCalculator(ow_generic_element.GenericElement):
     keywords = ["data", "file", "load", "read"]
 
     inputs = [("Parameters", BeamlineParameters, "setBeamlineParameters")]
+
+    outputs = [{"name": "Beam",
+                "type": ShadowBeam,
+                "doc": "Shadow Beam",
+                "id": "beam"}]
 
     beamline_parameters = None
 
@@ -106,6 +112,8 @@ class BeamlineCalculator(ow_generic_element.GenericElement):
                 self.plot_results(shadow_beam)
 
                 self.setStatusMessage("")
+
+                self.send("Beam", shadow_beam)
 
         except Exception as exception:
             QtGui.QMessageBox.critical(self, "QMessageBox.critical()",

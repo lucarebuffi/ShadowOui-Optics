@@ -11,7 +11,7 @@ from code_drivers.shadow.driver.shadow_beam import ShadowBeam
 
 class Histogram(ow_automatic_element.AutomaticElement):
 
-    name = "Histogram"
+    name = "Shadow Histogram"
     description = "Display Data Tools: Histogram"
     icon = "icons/histogram.png"
     maintainer = "Luca Rebuffi"

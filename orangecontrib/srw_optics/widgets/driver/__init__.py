@@ -2,9 +2,9 @@ NAME = "SRW: Driver"
 
 DESCRIPTION = "Widgets for SRW on Oasys + Optics."
 
-BACKGROUND = "#f1c4ab"
+BACKGROUND = "#b8bcdb"
 
-ICON = "icons/driver.jpg"
+ICON = "icons/driver.png"
 
 PRIORITY = 1009
 

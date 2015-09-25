@@ -16,7 +16,7 @@ from orangecontrib.shadow.util.shadow_util import ShadowGui
 from orangecontrib.optics.objects.optics_objects import ImagePlaneParameters
 
 class Screen(ow_generic_element.GenericElement):
-    name = "Screen"
+    name = "Shadow Screen"
     description = "Shadow OE: Screen"
     icon = "icons/screen_slits.png"
     maintainer = "Luca Rebuffi"

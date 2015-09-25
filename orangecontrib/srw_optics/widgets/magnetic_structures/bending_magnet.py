@@ -17,7 +17,7 @@ import optics.beam.electron_beam_pencil as ebp
 
 class BendingMagnet(OWWidget):
 
-    name = "Bending Magnet"
+    name = "SRW Bending Magnet"
     description = "SRW: Bending Magnet"
     icon = "icons/bending_magnet.png"
     maintainer = "Luca Rebuffi"
@@ -28,7 +28,7 @@ class BendingMagnet(OWWidget):
 
     inputs = [("Parameters", BendingMagnetParameters, "setBendingMagnetParameters")]
 
-    outputs = [{"name":"Output",
+    outputs = [{"name":"Output Wavefront",
                 "type":object,
                 "doc":"Output",
                 "id":"output"}]
@@ -80,6 +80,11 @@ class BendingMagnet(OWWidget):
                                round(min(geom.width()*0.5, self.MAX_WIDTH)),
                                round(min(geom.height()*0.5, self.MAX_HEIGHT))))
 
+        label_box = ShadowGui.widgetBox(self.controlArea, "", orientation="horizontal")
+
+        gui.separator(label_box, height=50)
+        gui.label(label_box, self, "                                JUST A DEMO WIDGET!!!!!")
+        gui.separator(label_box, height=50)
 
         self.left_box_1 = ShadowGui.widgetBox(self.controlArea, "Electron Beam", addSpace=True, orientation="vertical")
 

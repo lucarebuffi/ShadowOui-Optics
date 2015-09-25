@@ -17,7 +17,7 @@ import time
 
 
 class BeamlineCalculator(widget.OWWidget):
-    name = "Beamline Calculator"
+    name = "SRW Beamline Calculator"
     description = "SRW Driver: Beamline Calculator"
     icon = "icons/calculator.png"
     maintainer = "Luca Rebuffi"
@@ -47,7 +47,7 @@ class BeamlineCalculator(widget.OWWidget):
         self.runaction.triggered.connect(self.runSimulation)
         self.addAction(self.runaction)
 
-        self.controlArea.setFixedWidth(400)
+        self.controlArea.setFixedWidth(100)
 
         gui.separator(self.controlArea, height=50)
 

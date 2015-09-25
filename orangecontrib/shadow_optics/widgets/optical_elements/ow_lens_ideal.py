@@ -16,7 +16,7 @@ from orangecontrib.shadow.util.shadow_util import ShadowGui, ShadowMath
 from orangecontrib.optics.objects.optics_objects import LensIdealParameters
 
 class LensIdeal(ow_generic_element.GenericElement):
-    name = "Lens Ideal"
+    name = "Shadow Lens Ideal"
     description = "Shadow OE: Lens Ideal"
     icon = "icons/lens.png"
     maintainer = "Luca Rebuffi"

@@ -11,7 +11,7 @@ from code_drivers.shadow.driver.shadow_beam import ShadowBeam
 
 class PlotXY(AutomaticElement):
 
-    name = "Plot XY"
+    name = "Shadow Plot XY"
     description = "Display Data Tools: Plot XY"
     icon = "icons/plot_xy.png"
     maintainer = "Luca Rebuffi"
