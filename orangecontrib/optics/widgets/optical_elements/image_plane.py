@@ -154,9 +154,9 @@ class ImagePlane(OWWidget):
 
         if not self.beamline_parameters is None:
             return ImagePlaneParameters(beamline=beamline,
+                                        image_plane=image_plane,
                                         energy_min=self.beamline_parameters._energy_min,
-                                        energy_max=self.beamline_parameters._energy_max,
-                                        image_plane=image_plane)
+                                        energy_max=self.beamline_parameters._energy_max)
         else:
             return ImagePlaneParameters(beamline=beamline,
                                         image_plane=image_plane)

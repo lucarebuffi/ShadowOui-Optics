@@ -1,6 +1,6 @@
-import sys, numpy
+import sys
 
-from orangewidget import gui
+from orangewidget import gui, widget
 from orangewidget.settings import Setting
 from PyQt4 import QtGui
 from PyQt4.QtGui import QPalette, QColor, QFont
@@ -52,6 +52,10 @@ class LensIdeal(ow_generic_element.GenericElement):
 
     def __init__(self):
         super().__init__()
+
+        self.runaction = widget.OWAction("Run Shadow/Trace", self)
+        self.runaction.triggered.connect(self.traceOpticalElement)
+        self.addAction(self.runaction)
 
         self.controlArea.setFixedWidth(self.CONTROL_AREA_WIDTH)
 
@@ -240,7 +244,7 @@ class LensIdeal(ow_generic_element.GenericElement):
             self.le_focal_x.setEnabled(False)
             self.le_focal_y.setEnabled(False)
         else:
-            if not self.bending_magnet_parameters is None:
+            if not self.lens_ideal_parameters is None:
                 self.lens_ideal_parameters._lens_ideal.remove_settings(self.driver)
                 self.lens_ideal_parameters = None
 

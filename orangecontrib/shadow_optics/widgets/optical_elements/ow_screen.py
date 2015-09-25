@@ -1,6 +1,6 @@
-import sys, numpy
+import sys
 
-from orangewidget import gui
+from orangewidget import gui, widget
 from orangewidget.settings import Setting
 from PyQt4 import QtGui
 from PyQt4.QtGui import QPalette, QColor, QFont
@@ -10,13 +10,13 @@ from orangecontrib.shadow.util.shadow_objects import EmittingStream, TTYGrabber
 
 from code_drivers.shadow.driver.shadow_driver import ShadowDriver
 from code_drivers.shadow.driver.shadow_beam import ShadowBeam
-from code_drivers.shadow.optical_elements.shadow_lens_ideal import ShadowLensIdeal, ShadowLensIdealSettings
+from code_drivers.shadow.optical_elements.shadow_screen_slit import ShadowScreenSlit, ShadowScreenSlitSettings
 
-from orangecontrib.shadow.util.shadow_util import ShadowGui, ShadowMath
-from orangecontrib.optics.objects.optics_objects import LensIdealParameters
+from orangecontrib.shadow.util.shadow_util import ShadowGui
+from orangecontrib.optics.objects.optics_objects import ImagePlaneParameters
 
 class Screen(ow_generic_element.GenericElement):
-    name = "Lens Ideal"
+    name = "Screen"
     description = "Shadow OE: Screen"
     icon = "icons/screen_slits.png"
     maintainer = "Luca Rebuffi"
@@ -25,7 +25,7 @@ class Screen(ow_generic_element.GenericElement):
     category = "OE"
     keywords = ["data", "file", "load", "read"]
 
-    inputs = [("Parameters", LensIdealParameters, "setLensIdealParameters"),
+    inputs = [("Parameters", ImagePlaneParameters, "setImagePlaneParameters"),
               ("Input Beam", ShadowBeam, "setBeam")]
 
     outputs = [{"name": "Beam",
@@ -53,6 +53,10 @@ class Screen(ow_generic_element.GenericElement):
     def __init__(self):
         super().__init__()
 
+        self.runaction = widget.OWAction("Run Shadow/Trace", self)
+        self.runaction.triggered.connect(self.traceOpticalElement)
+        self.addAction(self.runaction)
+
         self.controlArea.setFixedWidth(self.CONTROL_AREA_WIDTH)
 
         tabs_setting = gui.tabWidget(self.controlArea)
@@ -63,8 +67,6 @@ class Screen(ow_generic_element.GenericElement):
 
         self.le_source_plane_distance = ShadowGui.lineEdit(lens_box, self, "source_plane_distance", "Source Plane Distance [cm]", labelWidth=350, valueType=float, orientation="horizontal")
         self.le_image_plane_distance = ShadowGui.lineEdit(lens_box, self, "image_plane_distance", "Image Plane Distance [cm]", labelWidth=350, valueType=float, orientation="horizontal")
-        self.le_focal_x = ShadowGui.lineEdit(lens_box, self, "focal_x", "Focal length (horizontal) [cm]", labelWidth=350, valueType=float, orientation="horizontal")
-        self.le_focal_y = ShadowGui.lineEdit(lens_box, self, "focal_y", "Focal length (vertical) [cm]", labelWidth=350, valueType=float, orientation="horizontal")
 
         gui.separator(self.controlArea)
 
@@ -100,15 +102,15 @@ class Screen(ow_generic_element.GenericElement):
 
     def populateFields(self):
 
-        if self.lens_ideal_parameters is None:
+        if self.image_plane_parameters is None:
             raise NotImplementedError("Widget to be plugged to Optic Package!")
         else:
-            settings = self.lens_ideal_parameters._lens_ideal.settings(self.driver)
+            settings = self.image_plane_parameters._image_plane.settings(self.driver)
 
             settings._source_plane_distance = self.source_plane_distance
             settings._image_plane_distance = self.image_plane_distance
 
-            return ShadowLensIdeal(lens_ideal=self.lens_ideal_parameters._lens_ideal)
+            return ShadowScreenSlit(image_plane=self.image_plane_parameters._image_plane)
 
     def doSpecificSetting(self, shadow_oe):
         pass
@@ -116,8 +118,6 @@ class Screen(ow_generic_element.GenericElement):
     def checkFields(self):
         ShadowGui.checkPositiveNumber(self.source_plane_distance, "Distance from Source")
         ShadowGui.checkPositiveNumber(self.image_plane_distance, "Image Plane Distance")
-        ShadowGui.checkPositiveNumber(self.focal_x, "Focal length (horizontal)")
-        ShadowGui.checkPositiveNumber(self.focal_y, "Focal length (vertical)")
 
     def completeOperations(self, shadow_oe=None):
         self.setStatusMessage("Running SHADOW")
@@ -196,15 +196,15 @@ class Screen(ow_generic_element.GenericElement):
             if self.is_automatic_run:
                 self.traceOpticalElement()
 
-    def setLensIdealParameters(self, lens_ideal_parameters):
-        if not lens_ideal_parameters is None:
-            self.lens_ideal_parameters = lens_ideal_parameters
+    def setImagePlaneParameters(self, image_plane_parameters):
+        if not image_plane_parameters is None:
+            self.image_plane_parameters = image_plane_parameters
 
-            if not self.lens_ideal_parameters._lens_ideal.has_settings(self.driver):
-                self.lens_ideal_parameters._lens_ideal.add_settings(ShadowLensIdealSettings())
+            if not self.image_plane_parameters._image_plane.has_settings(self.driver):
+                self.image_plane_parameters._image_plane.add_settings(ShadowScreenSlitSettings())
 
-            beamline = self.lens_ideal_parameters._beamline
-            component = self.lens_ideal_parameters._lens_ideal
+            beamline = self.image_plane_parameters._beamline
+            component = self.image_plane_parameters._image_plane
 
             position = beamline.position_of(component).z()
 
@@ -232,19 +232,12 @@ class Screen(ow_generic_element.GenericElement):
             self.source_plane_distance = p
             self.image_plane_distance = q
 
-            self.focal_x = 100*self.lens_ideal_parameters._lens_ideal._focal_x
-            self.focal_y = 100*self.lens_ideal_parameters._lens_ideal._focal_y
-
             self.le_source_plane_distance.setEnabled(False)
             self.le_image_plane_distance.setEnabled(False)
-            self.le_focal_x.setEnabled(False)
-            self.le_focal_y.setEnabled(False)
         else:
-            if not self.bending_magnet_parameters is None:
-                self.lens_ideal_parameters._lens_ideal.remove_settings(self.driver)
-                self.lens_ideal_parameters = None
+            if not self.image_plane_parameters is None:
+                self.image_plane_parameters._image_plane.remove_settings(self.driver)
+                self.image_plane_parameters = None
 
             self.le_source_plane_distance.setEnabled(True)
             self.le_image_plane_distance.setEnabled(True)
-            self.le_focal_x.setEnabled(True)
-            self.le_focal_y.setEnabled(True)

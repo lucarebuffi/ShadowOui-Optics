@@ -65,6 +65,8 @@ PACKAGE_DATA = {"orangecontrib.optics.widgets.magnetic_structures":["icons/*.png
                 "orangecontrib.shadow_optics.widgets.optical_elements":["icons/*.png", "icons/*.jpg"],
                 "orangecontrib.shadow_optics.widgets.plots":["icons/*.png", "icons/*.jpg"],
                 "orangecontrib.shadow_optics.widgets.driver":["icons/*.png", "icons/*.jpg"],
+                "orangecontrib.srw_optics.widgets.magnetic_structures":["icons/*.png", "icons/*.jpg"],
+                "orangecontrib.srw_optics.widgets.driver":["icons/*.png", "icons/*.jpg"],
 }
 
 SETUP_REQUIRES = (
@@ -75,7 +77,9 @@ NAMESPACE_PACAKGES = ["orangecontrib",
                       "orangecontrib.shadow_optics",
                       "orangecontrib.shadow_optics.widgets",
                       "orangecontrib.optics",
-                      "orangecontrib.optics.widgets",]
+                      "orangecontrib.optics.widgets",
+                      "orangecontrib.srw_optics",
+                      "orangecontrib.srw_optics.widgets",]
 
 
 ENTRY_POINTS = {
@@ -86,7 +90,9 @@ ENTRY_POINTS = {
                        "Shadow + Optics: O.E.  = orangecontrib.shadow_optics.widgets.optical_elements",
                        "Shadow + Optics: Plots = orangecontrib.shadow_optics.widgets.plots",
                        "Shadow + Optics: Driver = orangecontrib.shadow_optics.widgets.driver",
-    ),
+                       "SRW + Optics: Magnetic Structures = orangecontrib.srw_optics.widgets.magnetic_structures",
+                       "SRW + Optics: Driver = orangecontrib.srw_optics.widgets.driver",
+                           ),
 }
 
 if __name__ == '__main__':

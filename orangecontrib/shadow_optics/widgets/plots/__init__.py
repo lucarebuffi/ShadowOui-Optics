@@ -2,7 +2,7 @@ NAME = "Shadow: Optics Plots"
 
 DESCRIPTION = "Widgets for ShadowOui + Optics."
 
-BACKGROUND = "#FFFFFF"
+BACKGROUND = "#fffeb3"
 
 ICON = "icons/plotting_tools.png"
 

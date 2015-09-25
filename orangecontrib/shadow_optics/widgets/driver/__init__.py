@@ -2,7 +2,7 @@ NAME = "Shadow: Driver"
 
 DESCRIPTION = "Widgets for ShadowOui + Optics."
 
-BACKGROUND = "#FFFFFF"
+BACKGROUND = "#fffeb3"
 
 ICON = "icons/driver.jpg"
 
