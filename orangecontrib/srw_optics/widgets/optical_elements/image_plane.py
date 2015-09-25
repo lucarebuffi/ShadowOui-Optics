@@ -100,7 +100,7 @@ class ImagePlane(OWWidget):
 
             self.setStatusMessage("")
 
-            self.send("Output", None)
+            self.send("Output Wavefront", None)
 
         except Exception as exception:
             QtGui.QMessageBox.critical(self, "QMessageBox.critical()",
