@@ -6,5 +6,5 @@ BACKGROUND = "#f1c4ab"
 
 ICON = "icons/driver.jpg"
 
-PRIORITY = 1008
+PRIORITY = 1009
 

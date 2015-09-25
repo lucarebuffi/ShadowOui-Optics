@@ -2,7 +2,7 @@ NAME = "Shadow: Sources"
 
 DESCRIPTION = "Widgets for ShadowOui + Optics."
 
-BACKGROUND = "#FFFFFF"
+BACKGROUND = "#fffeb3"
 
 ICON = "icons/sources.png"
 
