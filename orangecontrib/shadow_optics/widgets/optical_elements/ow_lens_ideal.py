@@ -107,6 +107,9 @@ class LensIdeal(ow_generic_element.GenericElement):
         if self.lens_ideal_parameters is None:
             raise NotImplementedError("Widget to be plugged to Optic Package!")
         else:
+            self.lens_ideal_parameters._lens_ideal._focal_x = self.focal_x/100
+            self.lens_ideal_parameters._lens_ideal._focal_y = self.focal_y/100
+
             settings = self.lens_ideal_parameters._lens_ideal.settings(self.driver)
 
             settings._source_plane_distance = self.source_plane_distance
@@ -138,8 +141,6 @@ class LensIdeal(ow_generic_element.GenericElement):
         #       TO TEST SHADOW
         self.fixWeirdShadowBug()
         ###########################################
-
-        shadow_oe._oe.write("ziotreno.00")
 
         beam_out = ShadowBeam.traceFromOE(shadow_oe, self.input_beam)
 

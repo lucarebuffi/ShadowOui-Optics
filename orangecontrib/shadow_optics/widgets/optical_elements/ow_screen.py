@@ -18,7 +18,7 @@ from orangecontrib.optics.objects.optics_objects import ImagePlaneParameters
 class Screen(ow_generic_element.GenericElement):
     name = "Shadow Screen"
     description = "Shadow OE: Screen"
-    icon = "icons/screen_slits.png"
+    icon = "icons/screen_2.png"
     maintainer = "Luca Rebuffi"
     maintainer_email = "luca.rebuffi(@at@)elettra.eu"
     priority = 2
